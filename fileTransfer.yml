@@ -6,7 +6,7 @@ integrations:
       apis:
         - name: FileTransferMonitor
           commands:
-            - run: /etc/newrelic-infra/fileTransferMonitor.sh <directoryName>
+            - run: /etc/newrelic-infra/fileTransferMonitoring.sh <directoryName>
               split: horizontal
               split_by: \s+
               set_headers: [DirectoryName,FileName,FileSize]
