@@ -1,0 +1,29 @@
+integrations:
+  - name: nri-flex    
+    config:
+      name: commandSample
+      apis:
+        - name: Uptime
+          commands:
+            - run: 'cat /proc/uptime'
+              split: horizontal
+              split_by: \s+
+              set_header: [uptimeSeconds,idletimeSeconds]
+        - name: Upsince
+          commands:
+            - run: "echo upSince: $(uptime -p | cut -d' ' -f 2-)"
+              split_by: ":"
+        - name: bootTime
+          commands:
+            - run: uptime -s
+              split: horizontal
+              set_header: [lastBootDate, lastBootTime]
+              split_by: \s+
+        - name: systemctl
+          commands:
+            - run: systemctl --type=service --no-page --no-legend
+              split: horizontal
+              set_header: [service, load, active, sub, description]
+              regex_match: true
+              split_by: (\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(.*)
+
