@@ -1,0 +1,9 @@
+integrations:
+  - name: nri-flex
+    config:
+      name: winUptime
+      apis:
+        - event_type: WinUptime
+          shell: powershell
+          commands:
+            - run: "(get-date) - (gcim Win32_OperatingSystem).LastBootUpTime | ConvertTo-Json"
