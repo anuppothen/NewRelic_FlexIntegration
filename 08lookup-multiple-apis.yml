@@ -1,0 +1,50 @@
+---
+integrations:
+  - name: nri-flex
+    interval: 30s
+
+    config:
+      name: pingFlex
+      global:
+        base_url: https://nr-testdata1.s3.ap-southeast-2.amazonaws.com/
+        tls_config:
+          insecure_skip_verify: true
+        headers:
+          key: "abc123"
+        # proxy: http://abc:123@1.1.1.1
+
+      variable_store:
+        startDatetime: ${timestamp:datetimeutc-5min}
+
+      apis:
+        - name: getURLs
+          event_type: urlSample
+          url: ping-lookup-sample1.json
+          # debug: true
+          ignore_output: true
+
+
+        - name: ping
+          event_type: lab8        
+          run_async: true
+          async_rate: 3
+          commands:
+            - run: ping -c 5 ${lookup.urlSample:target}
+              timeout: 60000
+              split_output: statistics ---
+              regex_matches:
+                - expression: ([0-9]+\.?[0-9]+)\/([0-9]+\.?[0-9]+)\/([0-9]+\.?[0-9]+)\/([0-9]+\.?[0-9]+)
+                  keys: [min, avg, max, stddev]
+
+          custom_attributes:
+            url: ${lookup.urlSample:target}
+            time: ${var:startDatetime}
+            time_delta: ${timestamp:s}
+
+          metric_parser:
+            metrics:
+              time_delta: DELTA
+            namespace: # you can create a namespace with a custom attribute, or chain together existing attributes
+              # custom_attr: "mySpecialRedisServer"
+              existing_attr:
+                - url
