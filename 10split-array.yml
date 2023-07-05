@@ -1,0 +1,15 @@
+---
+integrations:
+  - name: nri-flex
+    interval: 60s
+    config:
+      name: lb
+      apis:
+        - name: lb
+          event_type: lab10
+          url: https://nr-testdata1.s3.ap-southeast-2.amazonaws.com/split_array_data_sample.json
+
+          split_array: true
+
+          set_header: [AGE,LAST_UPDATED,NAME]
+
