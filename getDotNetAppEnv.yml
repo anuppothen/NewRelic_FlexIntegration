@@ -1,0 +1,28 @@
+integrations:
+  - name: nri-flex
+    config:
+      name: hitNerdgraph
+      variable_store:
+        graphql_API_URL: https://api.newrelic.com/graphql
+      apis:
+        - name: dotnetAppList
+          event_type: dotnetAppList
+          url: ${var:graphql_API_URL}
+          method: POST
+          payload: >
+            {"query":"{ actor { entitySearch( queryBuilder: {domain: APM, reporting: true, tags: {key: \"language\", value: \"dotnet\"}} ) { count query results { nextCursor entities { name guid } } } } }"}
+          headers:
+            API-Key: "NRAK-GJWM8PDV4XCDB9SQWOYO4IFVITL"
+            Content-Type: application/json
+
+        - name: dotnetEnvList
+          event_type: dotnetEnvList
+          url: ${var:graphql_API_URL}
+          method: POST
+          payload: >
+            {"query":"{ actor { entities(guids: \"${lookup.dotnetAppList:guid}\") { ... on ApmApplicationEntity { guid name account { id name } applicationInstances { environmentAttributes(filter: {contains: \"NET\"}) { attribute value } details { host id } } } } } }"}
+          headers:
+            API-Key: "NRAK-GJWM8PDV4XCDB9SQWOYO4IFVITL"
+            Content-Type: application/json
+          jq: >
+            .data.actor.entities[] | {appName: .name, guid: .guid} as $appDetails | {accountName: .account.name, accountId: .account.id} as $accountDetails | .applicationInstances[] | .details as $details | .environmentAttributes | map({(.attribute): .value}) | add +$details +$appDetails +$accountDetails
