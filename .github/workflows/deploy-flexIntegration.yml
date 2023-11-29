@@ -2,19 +2,8 @@ name: deploy-flexIntegration
 run-name: Deploying and Running Flex Integration
 on: [push]
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    name: Node sample
-    steps:
-      - uses: actions/checkout@v3
-      - name: Setup node
-        uses: actions/setup-node@v3
-        with:
-          node-version: '14'
-
   nri-flex:
     if: ${{ always() }}
-    needs: [build]
     name: Send data to flex
     runs-on: ubuntu-latest
     steps:
