@@ -5,7 +5,6 @@ on:
     - cron: '*/10 * * * *'
 jobs:
   nri-flex:
-    if: ${{ always() }}
     name: Send data to flex
     runs-on: ubuntu-latest
     steps:
