@@ -1,7 +1,8 @@
 integrations:
   - name: nri-flex
+    interval: 10m
     config:
-      name: hitNerdgraph
+      name: hitNerdgraph2
       variable_store:
         graphql_API_URL: https://api.newrelic.com/graphql
       apis:
@@ -20,9 +21,9 @@ integrations:
           url: ${var:graphql_API_URL}
           method: POST
           payload: >
-            {"query":"{ actor { entities(guids: \"${lookup.dotnetAppList:guid}\") { ... on ApmApplicationEntity { guid name account { id name } applicationInstances { environmentAttributes(filter: {contains: \"NET\"}) { attribute value } details { host id } } } } } }"}
+            {"query":"{ actor { entities(guids: \"${lookup.dotnetAppList:guid}\") { ... on ApmApplicationEntity { guid name account { id name } applicationInstances { environmentAttributes(filter: {contains: \"NET\"}) { attribute value } details { host id } } tags { key values } } } } }"}
           headers:
             API-Key: "NRAK-GJWM8PDV4XCDB9SQWOYO4IFVITL"
             Content-Type: application/json
           jq: >
-            .data.actor.entities[] | {appName: .name, guid: .guid} as $appDetails | {accountName: .account.name, accountId: .account.id} as $accountDetails | .applicationInstances[] | .details as $details | .environmentAttributes | map({(.attribute): .value}) | add +$details +$appDetails +$accountDetails
+            .[] | (.data.actor.entities[].tags | map({(.key): .values[0]}) | add) as $tags | (.data.actor.entities[] | {appName: .name, guid:.guid}) as $appDetails | .data.actor.entities[].applicationInstances | map({(.environmentAttributes[].attribute): .environmentAttributes[].value, host: .details.host, id: .details.id, $appDetails, $tags}) | flatten[]
