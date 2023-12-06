@@ -1,0 +1,17 @@
+name: deploy-flexIntegration
+run-name: Deploying and Running Flex Integration
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+jobs:
+  nri-flex:
+    name: Send data to flex
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: supplypike/setup-bin@v3
+        with:
+          uri: 'https://github.com/newrelic/nri-flex/releases/download/v1.7.0/nri-flex_linux_1.7.0_amd64.tar.gz'
+          name: 'Send data to New Relic'
+          version: '1.7.0'
+          command: ./nri-flex -config_path /home/runner/work/NewRelic_FlexIntegration/NewRelic_FlexIntegration/getDotNetAppEnv.yml -insights_url https://insights-collector.newrelic.com/v1/accounts/${{secrets.ACCOUNT_ID}}/events -insights_api_key ${{secrets.INSIGHTS_API_KEY}}
