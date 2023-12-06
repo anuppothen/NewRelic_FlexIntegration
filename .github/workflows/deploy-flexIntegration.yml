@@ -2,7 +2,7 @@ name: deploy-flexIntegration
 run-name: Deploying and Running Flex Integration
 on:
   schedule:
-    - cron: '0/10 * * * *'
+    - cron: '*/10 * * * *'
 jobs:
   nri-flex:
     if: ${{ always() }}
