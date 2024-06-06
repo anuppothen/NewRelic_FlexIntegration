@@ -1,8 +1,8 @@
 name: deploy-flexIntegration
 run-name: Deploying and Running Flex Integration
-on: [push]
-  # schedule:
-  #   - cron: '*/10 * * * *'
+on:
+  schedule:
+    - cron: '*/10 * * * *'
 jobs:
   nri-flex:
     name: Send data to flex
