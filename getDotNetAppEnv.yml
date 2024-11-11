@@ -13,7 +13,7 @@ integrations:
           payload: >
             {"query":"{ actor { entitySearch( queryBuilder: {domain: APM, reporting: true, tags: {key: \"language\", value: \"dotnet\"}} ) { count query results { nextCursor entities { name guid } } } } }"}
           headers:
-            API-Key: "NRAK-GJWM8PDV4XCDB9SQWOYO4IFVITL"
+            API-Key: "<API_KEY>"
             Content-Type: application/json
 
         - name: dotnetEnvList
@@ -23,7 +23,7 @@ integrations:
           payload: >
             {"query":"{ actor { entities(guids: \"${lookup.dotnetAppList:guid}\") { ... on ApmApplicationEntity { guid name account { id name } applicationInstances { environmentAttributes(filter: {contains: \"NET\"}) { attribute value } details { host id } } tags { key values } } } } }"}
           headers:
-            API-Key: "NRAK-GJWM8PDV4XCDB9SQWOYO4IFVITL"
+            API-Key: "<API_KEY>"
             Content-Type: application/json
           jq: >
             .[] | (.data.actor.entities[].tags | map({(.key): .values[0]}) | add) as $tags | (.data.actor.entities[] | {appName: .name, guid:.guid}) as $appDetails | .data.actor.entities[].applicationInstances | map({(.environmentAttributes[].attribute): .environmentAttributes[].value, host: .details.host, id: .details.id, $appDetails, $tags}) | flatten[]
